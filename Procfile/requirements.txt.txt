@@ -3,3 +3,5 @@ waitress
 line-bot-sdk
 requests
 python-dotenv
+aiohttp
+pydantic
