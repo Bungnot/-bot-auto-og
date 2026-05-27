@@ -2,107 +2,11 @@
   "admins": {
     "U8777a84a5048e4b1e67b430969691ed7": {
       "user_id": "U8777a84a5048e4b1e67b430969691ed7",
-      "line_name": "Ethan Williams",
+      "line_name": "พ่อใหญ่แหวง",
       "member_no": 1,
       "added_by": "U8777a84a5048e4b1e67b430969691ed7",
       "added_by_name": "Ethan Williams",
       "added_at": "14/05/2026 16:21:30"
-    },
-    "Ue9b6ee39855037fce19d271723ca5054": {
-      "user_id": "Ue9b6ee39855037fce19d271723ca5054",
-      "line_name": "Akira🇯🇵",
-      "member_no": 34,
-      "added_by": "Uedddf2eb9a5758d5d4dc7a98376743c7",
-      "added_by_name": "B.",
-      "added_at": "17/05/2026 10:59:58"
-    },
-    "U91a670f894a837d1693bfd8b9b714c1d": {
-      "user_id": "U91a670f894a837d1693bfd8b9b714c1d",
-      "line_name": "RO-BER-TRO🩵",
-      "member_no": 35,
-      "added_by": "Uedddf2eb9a5758d5d4dc7a98376743c7",
-      "added_by_name": "B.",
-      "added_at": "17/05/2026 11:00:00"
-    },
-    "Ubf938cbc5eccde7917c702bb26477b21": {
-      "user_id": "Ubf938cbc5eccde7917c702bb26477b21",
-      "line_name": "Sunday 🇧🇷",
-      "member_no": 36,
-      "added_by": "Uedddf2eb9a5758d5d4dc7a98376743c7",
-      "added_by_name": "B.",
-      "added_at": "17/05/2026 11:00:03"
-    },
-    "U598162bf8b689ffd0d536d346e993c52": {
-      "user_id": "U598162bf8b689ffd0d536d346e993c52",
-      "line_name": "ZERO_STAGE💎",
-      "member_no": 2,
-      "added_by": "Uedddf2eb9a5758d5d4dc7a98376743c7",
-      "added_by_name": "B.",
-      "added_at": "17/05/2026 11:00:07"
-    },
-    "Uba7a8665ef0f2429e8d93ed9aa93e6a5": {
-      "user_id": "Uba7a8665ef0f2429e8d93ed9aa93e6a5",
-      "line_name": "อาชีพคือการอกหัก",
-      "member_no": 37,
-      "added_by": "Uedddf2eb9a5758d5d4dc7a98376743c7",
-      "added_by_name": "B.",
-      "added_at": "17/05/2026 11:00:09"
-    },
-    "U452c0e23a4b0eda2b706c7c6ffa05f30": {
-      "user_id": "U452c0e23a4b0eda2b706c7c6ffa05f30",
-      "line_name": "เก่งจะไปกู้โลก 🇪🇸",
-      "member_no": 38,
-      "added_by": "Uedddf2eb9a5758d5d4dc7a98376743c7",
-      "added_by_name": "B.",
-      "added_at": "17/05/2026 11:00:14"
-    },
-    "Uc4b636fc43b859323aa701986664845f": {
-      "user_id": "Uc4b636fc43b859323aa701986664845f",
-      "line_name": "🌬️BaRaM🌬️",
-      "member_no": 39,
-      "added_by": "Uedddf2eb9a5758d5d4dc7a98376743c7",
-      "added_by_name": "B.",
-      "added_at": "17/05/2026 11:00:19"
-    },
-    "U1898fb99bd07fbb555325dee3f6e5a62": {
-      "user_id": "U1898fb99bd07fbb555325dee3f6e5a62",
-      "line_name": "🐲㊙️🥰㊙️🐲",
-      "member_no": 40,
-      "added_by": "Uedddf2eb9a5758d5d4dc7a98376743c7",
-      "added_by_name": "B.",
-      "added_at": "17/05/2026 11:00:25"
-    },
-    "U6f1d161b3d1d92ccd696750ce4f18377": {
-      "user_id": "U6f1d161b3d1d92ccd696750ce4f18377",
-      "line_name": "Sunday 🇧🇷",
-      "member_no": 8,
-      "added_by": "Uf2c8cccf17ab01a930352493a738f28d",
-      "added_by_name": "เก่งจะไปกู้โลก 🇪🇸",
-      "added_at": "26/05/2026 05:46:00"
-    },
-    "U2fd7194d772a597ec73eb0ef96875400": {
-      "user_id": "U2fd7194d772a597ec73eb0ef96875400",
-      "line_name": "RO-BER-TRO🩵",
-      "member_no": 4,
-      "added_by": "Uf2c8cccf17ab01a930352493a738f28d",
-      "added_by_name": "เก่งจะไปกู้โลก 🇪🇸",
-      "added_at": "26/05/2026 05:46:10"
-    },
-    "U274ed4728035a059452e975c036736c6": {
-      "user_id": "U274ed4728035a059452e975c036736c6",
-      "line_name": "AKiRA🇯🇵",
-      "member_no": 3,
-      "added_by": "Uf2c8cccf17ab01a930352493a738f28d",
-      "added_by_name": "เก่งจะไปกู้โลก 🇪🇸",
-      "added_at": "26/05/2026 05:46:16"
-    },
-    "Ua35ed47ae9b0eaa3b7d4f43cb03fae8b": {
-      "user_id": "Ua35ed47ae9b0eaa3b7d4f43cb03fae8b",
-      "line_name": "⭐โบยะ・𝐇𝐀𝐑𝐔𝐌𝐈𝐂𝐇𝐈 🟡⚡",
-      "member_no": 11,
-      "added_by": "Uf2c8cccf17ab01a930352493a738f28d",
-      "added_by_name": "เก่งจะไปกู้โลก 🇪🇸",
-      "added_at": "26/05/2026 05:46:26"
     }
   },
   "updated_at": "2026-05-26T05:46:26.465560"
