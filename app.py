@@ -13,6 +13,7 @@ from concurrent.futures import ThreadPoolExecutor
 from types import SimpleNamespace
 
 from dotenv import load_dotenv
+import pgstore
 from flask import Flask, request, abort
 import requests
 
@@ -1523,63 +1524,49 @@ def compact_play_command_text(text) -> str:
 # ======================================================
 
 def load_user_db():
-    if not os.path.exists(USER_DB_FILE):
-        return {}, 1
+    data = pgstore.load("users")
+    if not data:
+        # fallback อ่านจาก JSON ถ้ายังไม่มีใน DB
+        if os.path.exists(USER_DB_FILE):
+            try:
+                with open(USER_DB_FILE, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                pgstore.save("users", data)
+                print("MIGRATED users.json -> PostgreSQL")
+            except Exception as e:
+                print(f"MIGRATE USER DB ERROR: {e}")
+                return {}, 1
+        else:
+            return {}, 1
 
-    try:
-        with open(USER_DB_FILE, "r", encoding="utf-8") as f:
-            data = json.load(f)
+    users = data.get("users", {})
+    next_member_no = data.get("next_member_no")
 
-        users = data.get("users", {})
-        next_member_no = data.get("next_member_no")
+    if not isinstance(users, dict):
+        users = {}
 
-        if not isinstance(users, dict):
-            users = {}
+    if not isinstance(next_member_no, int):
+        max_no = 0
+        for u in users.values():
+            try:
+                max_no = max(max_no, int(u.get("member_no", 0)))
+            except Exception:
+                pass
+        next_member_no = max_no + 1
 
-        if not isinstance(next_member_no, int):
-            max_no = 0
-            for u in users.values():
-                try:
-                    max_no = max(max_no, int(u.get("member_no", 0)))
-                except Exception:
-                    pass
-            next_member_no = max_no + 1
-
-        return users, next_member_no
-
-    except Exception as e:
-        print(f"LOAD USER DB ERROR: {e}")
-        return {}, 1
+    return users, next_member_no
 
 
 USERS, NEXT_MEMBER_NO = load_user_db()
 
 
 def save_user_db():
-    """
-    เขียนไฟล์แบบ atomic ลดโอกาสไฟล์พังถ้าโปรแกรมหยุดกลางทาง
-    """
     data = {
         "next_member_no": NEXT_MEMBER_NO,
         "users": USERS,
         "updated_at": datetime.now().isoformat(),
     }
-
-    directory = os.path.dirname(os.path.abspath(USER_DB_FILE)) or "."
-    fd, tmp_path = tempfile.mkstemp(prefix="users_", suffix=".json", dir=directory)
-
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-
-        os.replace(tmp_path, USER_DB_FILE)
-
-    except Exception as e:
-        print(f"SAVE USER DB ERROR: {e}")
-        try:
-            os.remove(tmp_path)
-        except Exception:
-            pass
+    pgstore.save("users", data)
 
 
 def load_profit_db():
@@ -1593,33 +1580,36 @@ def load_profit_db():
         "updated_at": None,
     }
 
-    if not os.path.exists(PROFIT_DB_FILE):
-        return default
-
-    try:
-        with open(PROFIT_DB_FILE, "r", encoding="utf-8") as f:
-            data = json.load(f)
-
-        if not isinstance(data, dict):
+    data = pgstore.load("profit")
+    if not data:
+        if os.path.exists(PROFIT_DB_FILE):
+            try:
+                with open(PROFIT_DB_FILE, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                pgstore.save("profit", data)
+                print("MIGRATED profit.json -> PostgreSQL")
+            except Exception as e:
+                print(f"MIGRATE PROFIT DB ERROR: {e}")
+                return default
+        else:
             return default
 
-        data.setdefault("total_profit", 0)
-        data.setdefault("rounds", [])
-        data.setdefault("updated_at", None)
-
-        if not isinstance(data.get("rounds"), list):
-            data["rounds"] = []
-
-        try:
-            data["total_profit"] = int(data.get("total_profit", 0))
-        except Exception:
-            data["total_profit"] = 0
-
-        return data
-
-    except Exception as e:
-        print(f"LOAD PROFIT DB ERROR: {e}")
+    if not isinstance(data, dict):
         return default
+
+    data.setdefault("total_profit", 0)
+    data.setdefault("rounds", [])
+    data.setdefault("updated_at", None)
+
+    if not isinstance(data.get("rounds"), list):
+        data["rounds"] = []
+
+    try:
+        data["total_profit"] = int(data.get("total_profit", 0))
+    except Exception:
+        data["total_profit"] = 0
+
+    return data
 
 
 PROFIT = load_profit_db()
@@ -1633,31 +1623,34 @@ def load_order_db():
         "last_reset": None,
     }
 
-    if not os.path.exists(ORDER_DB_FILE):
+    data = pgstore.load("order_state")
+    if not data:
+        if os.path.exists(ORDER_DB_FILE):
+            try:
+                with open(ORDER_DB_FILE, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                pgstore.save("order_state", data)
+                print("MIGRATED order_state.json -> PostgreSQL")
+            except Exception as e:
+                print(f"MIGRATE ORDER DB ERROR: {e}")
+                return default
+        else:
+            return default
+
+    if not isinstance(data, dict):
         return default
 
     try:
-        with open(ORDER_DB_FILE, "r", encoding="utf-8") as f:
-            data = json.load(f)
+        data["next_order_no"] = int(data.get("next_order_no", ORDER_START_NO))
+    except Exception:
+        data["next_order_no"] = ORDER_START_NO
 
-        if not isinstance(data, dict):
-            return default
+    if data["next_order_no"] <= 0:
+        data["next_order_no"] = ORDER_START_NO
 
-        try:
-            data["next_order_no"] = int(data.get("next_order_no", ORDER_START_NO))
-        except Exception:
-            data["next_order_no"] = ORDER_START_NO
-
-        if data["next_order_no"] <= 0:
-            data["next_order_no"] = ORDER_START_NO
-
-        data.setdefault("updated_at", None)
-        data.setdefault("last_reset", None)
-        return data
-
-    except Exception as e:
-        print(f"LOAD ORDER DB ERROR: {e}")
-        return default
+    data.setdefault("updated_at", None)
+    data.setdefault("last_reset", None)
+    return data
 
 
 ORDER_STATE = load_order_db()
@@ -1669,22 +1662,7 @@ def save_order_db():
         "updated_at": datetime.now().isoformat(),
         "last_reset": ORDER_STATE.get("last_reset"),
     }
-
-    directory = os.path.dirname(os.path.abspath(ORDER_DB_FILE)) or "."
-    fd, tmp_path = tempfile.mkstemp(prefix="order_state_", suffix=".json", dir=directory)
-
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-
-        os.replace(tmp_path, ORDER_DB_FILE)
-
-    except Exception as e:
-        print(f"SAVE ORDER DB ERROR: {e}")
-        try:
-            os.remove(tmp_path)
-        except Exception:
-            pass
+    pgstore.save("order_state", data)
 
 
 def get_next_order_no():
@@ -1713,51 +1691,33 @@ def load_slip_topup_db():
         "updated_at": None,
     }
 
-    if not os.path.exists(SLIP_TOPUP_DB_FILE):
-        return default
-
-    def repair_bad_slip_file(reason: str):
-        try:
-            bad_path = f"{SLIP_TOPUP_DB_FILE}.bad_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    data = pgstore.load("slip_topups")
+    if not data:
+        if os.path.exists(SLIP_TOPUP_DB_FILE):
             try:
-                # ถ้าไฟล์มีข้อมูลเดิมอยู่ ให้เก็บสำรองไว้ก่อน
-                if os.path.exists(SLIP_TOPUP_DB_FILE) and os.path.getsize(SLIP_TOPUP_DB_FILE) > 0:
-                    os.replace(SLIP_TOPUP_DB_FILE, bad_path)
-                    print(f"REPAIRED SLIP TOPUP DB: backup bad file to {bad_path} ({reason})")
-            except Exception as backup_error:
-                print(f"BACKUP BAD SLIP TOPUP DB ERROR: {backup_error}")
+                if os.path.getsize(SLIP_TOPUP_DB_FILE) > 0:
+                    with open(SLIP_TOPUP_DB_FILE, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                    pgstore.save("slip_topups", data)
+                    print("MIGRATED slip_topups.json -> PostgreSQL")
+                else:
+                    return default
+            except Exception as e:
+                print(f"MIGRATE SLIP TOPUP DB ERROR: {e}")
+                return default
+        else:
+            return default
 
-            directory = os.path.dirname(os.path.abspath(SLIP_TOPUP_DB_FILE)) or "."
-            fd, tmp_path = tempfile.mkstemp(prefix="slip_topups_repair_", suffix=".json", dir=directory)
-            with os.fdopen(fd, "w", encoding="utf-8") as f:
-                json.dump(default, f, ensure_ascii=False, indent=2)
-            os.replace(tmp_path, SLIP_TOPUP_DB_FILE)
-        except Exception as repair_error:
-            print(f"REPAIR SLIP TOPUP DB ERROR: {repair_error}")
+    if not isinstance(data, dict):
         return default
 
-    try:
-        # ไฟล์ว่าง 0 byte จะทำให้ json.load error line 1 column 1
-        if os.path.getsize(SLIP_TOPUP_DB_FILE) == 0:
-            return repair_bad_slip_file("empty file")
+    data.setdefault("slips", {})
+    data.setdefault("updated_at", None)
 
-        with open(SLIP_TOPUP_DB_FILE, "r", encoding="utf-8") as f:
-            data = json.load(f)
+    if not isinstance(data.get("slips"), dict):
+        data["slips"] = {}
 
-        if not isinstance(data, dict):
-            return repair_bad_slip_file("root is not dict")
-
-        data.setdefault("slips", {})
-        data.setdefault("updated_at", None)
-
-        if not isinstance(data.get("slips"), dict):
-            data["slips"] = {}
-
-        return data
-
-    except Exception as e:
-        print(f"LOAD SLIP TOPUP DB ERROR: {e}")
-        return repair_bad_slip_file(str(e))
+    return data
 
 
 SLIP_TOPUPS = load_slip_topup_db()
@@ -1768,22 +1728,7 @@ def save_slip_topup_db():
         "slips": SLIP_TOPUPS.get("slips", {}),
         "updated_at": datetime.now().isoformat(),
     }
-
-    directory = os.path.dirname(os.path.abspath(SLIP_TOPUP_DB_FILE)) or "."
-    fd, tmp_path = tempfile.mkstemp(prefix="slip_topups_", suffix=".json", dir=directory)
-
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-
-        os.replace(tmp_path, SLIP_TOPUP_DB_FILE)
-
-    except Exception as e:
-        print(f"SAVE SLIP TOPUP DB ERROR: {e}")
-        try:
-            os.remove(tmp_path)
-        except Exception:
-            pass
+    pgstore.save("slip_topups", data)
 
 
 # ======================================================
@@ -1800,27 +1745,30 @@ def load_admin_db():
         "updated_at": None,
     }
 
-    if not os.path.exists(ADMIN_DB_FILE):
-        return default
-
-    try:
-        with open(ADMIN_DB_FILE, "r", encoding="utf-8") as f:
-            data = json.load(f)
-
-        if not isinstance(data, dict):
+    data = pgstore.load("admins")
+    if not data:
+        if os.path.exists(ADMIN_DB_FILE):
+            try:
+                with open(ADMIN_DB_FILE, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                pgstore.save("admins", data)
+                print("MIGRATED admins.json -> PostgreSQL")
+            except Exception as e:
+                print(f"MIGRATE ADMIN DB ERROR: {e}")
+                return default
+        else:
             return default
 
-        data.setdefault("admins", {})
-        data.setdefault("updated_at", None)
-
-        if not isinstance(data.get("admins"), dict):
-            data["admins"] = {}
-
-        return data
-
-    except Exception as e:
-        print(f"LOAD ADMIN DB ERROR: {e}")
+    if not isinstance(data, dict):
         return default
+
+    data.setdefault("admins", {})
+    data.setdefault("updated_at", None)
+
+    if not isinstance(data.get("admins"), dict):
+        data["admins"] = {}
+
+    return data
 
 
 DYNAMIC_ADMINS = load_admin_db()
@@ -1831,22 +1779,7 @@ def save_admin_db():
         "admins": DYNAMIC_ADMINS.get("admins", {}),
         "updated_at": datetime.now().isoformat(),
     }
-
-    directory = os.path.dirname(os.path.abspath(ADMIN_DB_FILE)) or "."
-    fd, tmp_path = tempfile.mkstemp(prefix="admins_", suffix=".json", dir=directory)
-
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-
-        os.replace(tmp_path, ADMIN_DB_FILE)
-
-    except Exception as e:
-        print(f"SAVE ADMIN DB ERROR: {e}")
-        try:
-            os.remove(tmp_path)
-        except Exception:
-            pass
+    pgstore.save("admins", data)
 
 
 def dynamic_admin_ids():
@@ -1862,22 +1795,7 @@ def save_profit_db():
         "rounds": PROFIT.get("rounds", []),
         "updated_at": datetime.now().isoformat(),
     }
-
-    directory = os.path.dirname(os.path.abspath(PROFIT_DB_FILE)) or "."
-    fd, tmp_path = tempfile.mkstemp(prefix="profit_", suffix=".json", dir=directory)
-
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-
-        os.replace(tmp_path, PROFIT_DB_FILE)
-
-    except Exception as e:
-        print(f"SAVE PROFIT DB ERROR: {e}")
-        try:
-            os.remove(tmp_path)
-        except Exception:
-            pass
+    pgstore.save("profit", data)
 
 
 def calculate_commission(amount: int) -> int:
