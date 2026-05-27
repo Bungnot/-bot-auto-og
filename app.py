@@ -2385,10 +2385,10 @@ def money_text(value):
 # Bank account command
 # ======================================================
 
-BANK_ACCOUNT_NUMBER = "9382633298"
-BANK_ACCOUNT_DISPLAY_NUMBER = "938-2633-298"
-BANK_ACCOUNT_BANK = "ไทยพาณิชย์"
-BANK_ACCOUNT_NAME = "ภานุพงษ์ เอี่ยมท่า"
+BANK_ACCOUNT_NUMBER = "020468527088"
+BANK_ACCOUNT_DISPLAY_NUMBER = "020468527088"
+BANK_ACCOUNT_BANK = "ออมสิน"
+BANK_ACCOUNT_NAME = "ธานินทร์ นินไชย"
 # ใช้บัญชีเดียวสำหรับเติมเครดิตอัตโนมัติเท่านั้น
 # โค้ดจะใช้บัญชีนี้ตรวจ checkReceiver กับ Slip2Go และจะไม่รับบัญชีอื่น แม้ .env ยังมีบัญชีเก่าอยู่
 SINGLE_AUTO_TOPUP_RECEIVER = {
@@ -2402,7 +2402,7 @@ SINGLE_AUTO_TOPUP_RECEIVER = {
 # ปรับใน .env ได้ เช่น BANK_ACCOUNT_COOLDOWN_SECONDS=10
 BANK_ACCOUNT_COOLDOWN_SECONDS = int(os.getenv("BANK_ACCOUNT_COOLDOWN_SECONDS", "10"))
 BANK_ACCOUNT_COOLDOWN_CACHE = {}
-BANK_BACKOFFICE_URL = os.getenv("BANK_BACKOFFICE_URL", "https://page.line.me/631kykty").strip() or "https://page.line.me/631kykty"
+BANK_BACKOFFICE_URL = os.getenv("BANK_BACKOFFICE_URL", "https://page.line.me/314uzgob").strip() or "https://page.line.me/314uzgob"
 
 
 def is_bank_account_request(text: str) -> bool:
@@ -2434,12 +2434,12 @@ def is_bank_account_request(text: str) -> bool:
 
 def bank_account_text() -> str:
     return (
-        "📌💎บั้งไฟอีสาน OG💯💵\n"
+        "📌💎บั้งไฟสายฟ้า💯💵\n"
         "━━━━━━━━━━━━━━\n\n"
         "🏦 แจ้งเลขบัญชีฝากเงิน\n\n"
-        "🔢 เลขบัญชี : 9382633298\n"
-        "🏛 ธนาคาร : ไทยพาณิชย์\n"
-        "👤 ชื่อบัญชี : ภานุพงษ์ เอี่ยมท่า\n\n"
+        "🔢 เลขบัญชี : 020468527088\n"
+        "🏛 ธนาคาร : ออมสิน\n"
+        "👤 ชื่อบัญชี : ธานินทร์ นินไชย\n\n"
         "━━━━━━━━━━━━━━\n"
         "⚠️ เพื่อป้องกันมิจฉาชีพ\n"
         "ชื่อผู้ฝาก-ถอน ต้องเป็นชื่อเดียวกันเท่านั้น ✅"
