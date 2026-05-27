@@ -2659,6 +2659,7 @@ def admin_command_help_text() -> str:
         "- listplay = ดูสมาชิกที่เล่นกันแบบสั้น เช่น นาย A เล่น 320-350ล500 กับ นาย B\n"
         "- listplay ชื่อค่าย = ดูรายการเล่นแบบสั้นตามชื่อค่าย\n"
         "- สกอ / สกอร์ / รายการ = ดูสรุปผลค่ายที่แจ้งผลแล้วแบบ Flex\n"
+        "- ล้างสกอ / ล้างสกอร์ = ล้างรายการสกอที่แจ้งผลแล้วออกจาก memory (ไม่กระทบเครดิต/กำไร/ออเดอร์)\n"
         "- CR ชื่อค่าย / ยืนยัน ชื่อค่าย = เคลียร์รอบตามชื่อค่าย\n\n"
         "↩️ ย้อนผล/ล้างออเดอร์\n"
         "- ย้อนผล ชื่อค่าย = ขอคืนผลที่แจ้งผิด\n"
@@ -3463,6 +3464,92 @@ def scoreboard_flex_for_chat(chat_id: str = None, limit: int = 25):
 
 def scoreboard_empty_text(chat_id: str = None) -> str:
     return "ยังไม่มีรายการที่เปิดวันนี้"
+
+
+def is_clear_scoreboard_command(text: str) -> bool:
+    """คำสั่งล้างสกอ/ล้างรายการผลรวมที่แจ้งผลแล้วออกจาก memory"""
+    clean = re.sub(r"\s+", "", (text or "").strip()).lower()
+    return clean in {
+        "ล้างสกอ",
+        "ล้างสกอร์",
+        "clearscore",
+        "clearscores",
+        "ล้างรายการ",
+        "ล้างผล",
+        "รีเซ็ตสกอ",
+        "รีเซ็ตสกอร์",
+        "resetscore",
+        "resetscores",
+    }
+
+
+def reset_scoreboard_report(reset_by: str = "-", chat_id: str = None) -> str:
+    """
+    ล้างรายการสกอ (รอบที่แจ้งผลแล้ว) ออกจาก memory
+    - ล้างเฉพาะรอบที่ settled=True และมี result ในห้องนี้
+    - ไม่กระทบเครดิตลูกค้า / กำไร / ออเดอร์ / รอบที่ยังค้างอยู่
+    """
+    cleared_at = now_text()
+    cleared_count = 0
+    cleared_camps = []
+
+    with STATE_LOCK:
+        for base_no, st in list(ROUNDS.items()):
+            if not isinstance(st, dict):
+                continue
+            if chat_id and st.get("chat_id") and st.get("chat_id") != chat_id:
+                continue
+            if not st.get("round_id") or not st.get("settled") or st.get("result") is None:
+                continue
+
+            camp = st.get("camp_name") or "-"
+            result_val = st.get("result")
+            cleared_camps.append(f"{camp} (ผล: {result_val})")
+
+            # รีเซ็ต state ของรอบนั้นให้เป็นค่าว่าง เพื่อให้เปิดรอบใหม่ได้
+            st["result"] = None
+            st["settled"] = False
+            st["opened"] = False
+            st["round_id"] = None
+            st["camp_name"] = None
+            st["chat_id"] = None
+            st["base_min"] = None
+            st["base_max"] = None
+            st["price_mode"] = None
+            st["no_price_reason"] = None
+            st["two_digit_start"] = None
+            st["closed_at"] = None
+            st["continued_at"] = None
+            st["continue_count"] = 0
+            st["pending_result"] = None
+            st["pending_result_at"] = None
+            st["pending_price"] = None
+            st["pending_price_at"] = None
+            st["pending_clear"] = None
+            st["pending_clear_at"] = None
+            st["pending_clear_ts"] = None
+            st["pending_rollback"] = None
+            st["pending_rollback_at"] = None
+            st["pending_rollback_ts"] = None
+            st["updated_at"] = cleared_at
+            cleared_count += 1
+
+        save_round_backup_db(reason="scoreboard_reset")
+
+    if cleared_count == 0:
+        return "ยังไม่มีรายการสกอที่แจ้งผลแล้วให้ล้าง"
+
+    sample = "\n".join(f"- {c}" for c in cleared_camps[:10])
+    if len(cleared_camps) > 10:
+        sample += f"\n- ...อีก {len(cleared_camps) - 10} ค่าย"
+
+    return (
+        "✅ ล้างสกอเรียบร้อย\n\n"
+        f"ผู้สั่งล้าง: {reset_by or '-'}\n"
+        f"ล้างรายการที่แจ้งผลแล้ว: {cleared_count:,} ค่าย\n\n"
+        f"รายการที่ล้าง:\n{sample}\n\n"
+        "หมายเหตุ: คำสั่งนี้ล้างเฉพาะรายการสกอใน memory ไม่กระทบเครดิตลูกค้า / กำไร / ออเดอร์ / รอบที่ยังค้างอยู่"
+    )
 
 
 def has_price_setting():
@@ -10595,6 +10682,8 @@ def is_backoffice_relevant_text(text: str, user_id: str = None) -> bool:
         return True
     if is_clear_round_backups_command(raw):
         return True
+    if is_clear_scoreboard_command(raw):
+        return True
     if parse_credit_command(raw):
         return True
 
@@ -10852,6 +10941,14 @@ def handle_message(event):
             return
 
         reply_text(event.reply_token, clear_round_backups_report(user_display_name(user_id)))
+        return
+
+    if is_clear_scoreboard_command(text):
+        if not can_use_strict_backoffice_command(event):
+            reply_text(event.reply_token, strict_backoffice_only_text("ล้างสกอ"))
+            return
+
+        reply_text(event.reply_token, reset_scoreboard_report(user_display_name(user_id), get_current_chat_id(event)))
         return
 
     if text.replace(" ", "").upper() in {"CKรวม", "CKALL"}:
