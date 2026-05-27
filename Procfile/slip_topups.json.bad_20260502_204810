@@ -1,0 +1,70 @@
+{
+  "slips": {
+    "612217334602I000013B9790": {
+      "user_id": "Ube359ec96cc035f52c533384314d6cb1",
+      "member_no": 1,
+      "line_name": "Bungnot._",
+      "amount_baht": "100",
+      "credit_added": 100,
+      "old_credit": 7600,
+      "new_credit": 7700,
+      "ref_path": "data.transRef",
+      "amount_path": "data.amount",
+      "line_message_id": "612176523549475344",
+      "created_at": "02/05/2026 17:15:49",
+      "slip2go_response": {
+        "code": "200200",
+        "message": "Slip is valid.",
+        "data": {
+          "transRef": "612217334602I000013B9790",
+          "dateTime": "2026-05-02T17:07:36+07:00",
+          "amount": 100,
+          "ref1": null,
+          "ref2": null,
+          "ref3": null,
+          "receiver": {
+            "account": {
+              "name": "นาย กิตติเชษฐ์ บ",
+              "bank": {
+                "account": "07xxxx1328"
+              },
+              "proxy": null
+            },
+            "bank": {
+              "id": "004",
+              "name": "ธนาคารกสิกรไทย"
+            }
+          },
+          "sender": {
+            "account": {
+              "name": "นาย กิตติเชษฐ์ บ",
+              "bank": {
+                "account": "0204xxxx6959"
+              }
+            },
+            "bank": {
+              "id": "030",
+              "name": "ธนาคารออมสิน"
+            }
+          },
+          "decode": "0045000600000101030300224612217334602I000013B97905102TH91040ED7",
+          "referenceId": "4015e0ed-9468-4fd1-9ce5-9819293b067a-12062"
+        },
+        "_slip2go_debug": {
+          "endpoint_used": "https://connect.slip2go.com/api/verify-slip/qr-image/info",
+          "field_used": "file",
+          "payload_variant": "with_payload",
+          "payload_sent": {
+            "checkDuplicate": true,
+            "checkReceiver": [
+              {
+                "accountNumber": "0748441328"
+              }
+            ]
+          },
+          "configured_endpoint": "https://connect.slip2go.com/api/verify-slip/qr-image/info"
+        }
+      }
+    },
+  "updated_at": "2026-05-02T20:35:40.907362"
+}

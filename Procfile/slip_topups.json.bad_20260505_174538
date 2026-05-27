@@ -1,0 +1,140 @@
+{
+  "slips": {
+    "016122205418BTF03058": {
+      "user_id": "Ube359ec96cc035f52c533384314d6cb1",
+      "member_no": 1,
+      "line_name": "Bungnot._",
+      "amount_baht": "1",
+      "credit_added": 1,
+      "old_credit": 98501,
+      "new_credit": 98502,
+      "ref_path": "data.transRef",
+      "amount_path": "data.amount",
+      "line_message_id": "612198560439730245",
+      "created_at": "02/05/2026 20:54:45",
+      "slip2go_response": {
+        "code": "200200",
+        "message": "Slip is valid.",
+        "data": {
+          "transRef": "016122205418BTF03058",
+          "dateTime": "2026-05-02T20:54:18+07:00",
+          "amount": 1,
+          "ref1": "",
+          "ref2": "",
+          "ref3": "",
+          "receiver": {
+            "account": {
+              "name": "น.ส. กิติพร ศักดิ์ศรี",
+              "bank": {
+                "account": "xxx-x-x6879-x"
+              },
+              "proxy": null
+            },
+            "bank": {
+              "id": "004",
+              "name": "ธนาคารกสิกรไทย"
+            }
+          },
+          "sender": {
+            "account": {
+              "name": "นาย กิตติเชษฐ์ บ",
+              "bank": {
+                "account": "xxx-x-x4132-x"
+              }
+            },
+            "bank": {
+              "id": "004",
+              "name": "ธนาคารกสิกรไทย"
+            }
+          },
+          "decode": "0041000600000101030040220016122205418BTF030585102TH9104F1B2",
+          "referenceId": "dce4ad97-69e3-4bf1-bdb8-1617b442e940-12062"
+        },
+        "_slip2go_debug": {
+          "endpoint_used": "https://connect.slip2go.com/api/verify-slip/qr-image/info",
+          "field_used": "file",
+          "payload_variant": "with_payload",
+          "payload_sent": {
+            "checkDuplicate": true,
+            "checkReceiver": [
+              {
+                "accountNumber": "1423968792",
+                "accountNameTH": "กิติพร ศักดิ์ศรี",
+                "accountNameEN": "Kittiporn Saksri"
+              }
+            ]
+          },
+          "configured_endpoint": "https://connect.slip2go.com/api/verify-slip/qr-image/info"
+        }
+      }
+    },
+    "612222246118I000001B9790": {
+      "user_id": "Ube359ec96cc035f52c533384314d6cb1",
+      "member_no": 1,
+      "line_name": "Bungnot._",
+      "amount_baht": "1",
+      "credit_added": 1,
+      "old_credit": 68955,
+      "new_credit": 68956,
+      "ref_path": "data.transRef",
+      "amount_path": "data.amount",
+      "line_message_id": "612211221198012693",
+      "created_at": "02/05/2026 23:00:32",
+      "slip2go_response": {
+        "code": "200200",
+        "message": "Slip is valid.",
+        "data": {
+          "transRef": "612222246118I000001B9790",
+          "dateTime": "2026-05-02T22:57:56+07:00",
+          "amount": 1,
+          "ref1": null,
+          "ref2": null,
+          "ref3": null,
+          "receiver": {
+            "account": {
+              "name": "นาย กิตติเชษฐ์ บ",
+              "bank": {
+                "account": "07xxxx1328"
+              },
+              "proxy": null
+            },
+            "bank": {
+              "id": "004",
+              "name": "ธนาคารกสิกรไทย"
+            }
+          },
+          "sender": {
+            "account": {
+              "name": "นาย กิตติเชษฐ์ บ",
+              "bank": {
+                "account": "0204xxxx6959"
+              }
+            },
+            "bank": {
+              "id": "030",
+              "name": "ธนาคารออมสิน"
+            }
+          },
+          "decode": "0045000600000101030300224612222246118I000001B97905102TH91046D26",
+          "referenceId": "4e4a33f6-c23d-4a70-95a7-a45153bb97f6-12062"
+        },
+        "_slip2go_debug": {
+          "endpoint_used": "https://connect.slip2go.com/api/verify-slip/qr-image/info",
+          "field_used": "file",
+          "payload_variant": "with_payload",
+          "payload_sent": {
+            "checkDuplicate": true,
+            "checkReceiver": [
+              {
+                "accountNumber": "0748441328",
+                "accountNameTH": "กิตติเชษฐ์ บุญอินทร์",
+                "accountNameEN": "Kittichet Boonin"
+              }
+            ]
+          },
+          "configured_endpoint": "https://connect.slip2go.com/api/verify-slip/qr-image/info"
+        }
+      }
+    },
+  "updated_at": "2026-05-05T16:33:20.501082"
+}

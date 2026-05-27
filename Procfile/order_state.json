@@ -1,0 +1,15 @@
+{
+  "next_order_no": 2468,
+  "updated_at": "2026-05-27T11:36:56.386062",
+  "last_reset": {
+    "reset_by": "B.",
+    "old_next_order_no": 278,
+    "new_next_order_no": 1,
+    "cleared_matches": 1,
+    "cleared_posts": 1,
+    "cleared_pending": 0,
+    "refunded_credit_total": 0,
+    "refunded_orders": [],
+    "reset_at": "17/05/2026 01:04:48"
+  }
+}
