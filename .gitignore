@@ -1,5 +1,0 @@
-Procfile/.env
-Procfile/venv/
-Procfile/__pycache__/
-Procfile/*.rar
-*.pyc
