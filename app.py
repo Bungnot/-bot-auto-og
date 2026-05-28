@@ -2681,7 +2681,7 @@ def is_rules_request(text: str) -> bool:
     return clean in {"กต", "กติกา"}
 
 
-RULES_IMAGE_URL = "https://img2.pic.in.th/26d02e16-f7cf-403f-92ed-2a8eed65d8d1.png"
+RULES_IMAGE_URL = "https://img1.pic.in.th/images/a94cb668-c419-46d0-afc4-765a2948fdc2.png"
 
 
 def rules_flex() -> dict:
@@ -10724,7 +10724,8 @@ def should_process_text_message(event, text: str) -> bool:
         # คำสั่งข้อมูลทั่วไปที่ให้ลูกค้าใช้ในกลุ่มหน้าบ้านได้
         # ต้องปล่อยผ่านด่าน quiet mode ก่อน ไม่อย่างนั้น handler ด้านล่างจะไม่มีทางเห็นคำสั่ง
         if (
-            is_cancel_help_request(raw)
+            is_rules_request(raw)
+            or is_cancel_help_request(raw)
             or is_new_member_instruction_request(raw)
             or is_bank_account_request(raw)
             or is_withdrawal_command(raw)
@@ -11030,6 +11031,9 @@ def handle_message(event):
         reply_text(event.reply_token, msg)
         return
 
+    if is_rules_request(text):
+        reply_flex(event.reply_token, "วิธีการเล่นบั้งไฟ", rules_flex())
+        return
 
     if is_cancel_help_request(text):
         reply_text(event.reply_token, cancel_help_text())
