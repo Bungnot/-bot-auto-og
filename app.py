@@ -10948,7 +10948,7 @@ def handle_message(event):
             reply_text(event.reply_token, strict_backoffice_only_text("ล้างสกอ"))
             return
 
-        reply_text(event.reply_token, reset_scoreboard_report(user_display_name(user_id), get_current_chat_id(event)))
+        reply_text(event.reply_token, reset_scoreboard_report(user_display_name(user_id)))
         return
 
     if text.replace(" ", "").upper() in {"CKรวม", "CKALL"}:
