@@ -10944,8 +10944,8 @@ def handle_message(event):
         return
 
     if is_clear_scoreboard_command(text):
-        if not can_use_strict_backoffice_command(event):
-            reply_text(event.reply_token, strict_backoffice_only_text("ล้างสกอ"))
+        if not is_admin(user_id):
+            reply_text(event.reply_token, "คำสั่งนี้ใช้ได้เฉพาะแอดมิน")
             return
 
         reply_text(event.reply_token, reset_scoreboard_report(user_display_name(user_id)))
