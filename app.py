@@ -10724,8 +10724,7 @@ def should_process_text_message(event, text: str) -> bool:
         # คำสั่งข้อมูลทั่วไปที่ให้ลูกค้าใช้ในกลุ่มหน้าบ้านได้
         # ต้องปล่อยผ่านด่าน quiet mode ก่อน ไม่อย่างนั้น handler ด้านล่างจะไม่มีทางเห็นคำสั่ง
         if (
-            is_rules_request(raw)
-            or is_cancel_help_request(raw)
+            is_cancel_help_request(raw)
             or is_new_member_instruction_request(raw)
             or is_bank_account_request(raw)
             or is_withdrawal_command(raw)
@@ -11031,9 +11030,6 @@ def handle_message(event):
         reply_text(event.reply_token, msg)
         return
 
-    if is_rules_request(text):
-        reply_flex(event.reply_token, "วิธีการเล่นบั้งไฟ", rules_flex())
-        return
 
     if is_cancel_help_request(text):
         reply_text(event.reply_token, cancel_help_text())
